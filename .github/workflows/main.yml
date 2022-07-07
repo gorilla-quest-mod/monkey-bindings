@@ -37,7 +37,7 @@ jobs:
         ndk-version: r23c
         # Add installation directory to path
         add-to-path: true
-        run: "ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
+    - run: "ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
     - name: Print directory structure
       # You may pin to the exact commit or the version.
       # uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@553df9b35280b89f01b0f3e4d93d9171095a55d4
@@ -49,4 +49,12 @@ jobs:
    #     name: Build
    #     path: 
    #     # The desired behavior if no files are found using the provided path.
+    - name: Wait / Sleep
+      # You may pin to the exact commit or the version.
+      # uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
+      uses: jakejarvis/wait-action@v0.1.1
+      with:
+        # Follows the Linux sleep syntax for time units: a number followed by s for seconds, m for minutes, etc
+        time: 60s
+ 
         
