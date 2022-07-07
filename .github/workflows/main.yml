@@ -42,6 +42,17 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@553df9b35280b89f01b0f3e4d93d9171095a55d4
       uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
+    - name: Build using QPM and NDK
+      # You may pin to the exact commit or the version.
+      # uses: sc2ad/QuestNDKBuildAction@b697f685e75bcf87f50ca95ea5f4baa7e99a9793
+      uses: sc2ad/QuestNDKBuildAction@v0.1.1
+      with:
+        # Github token
+        github_token: 
+        # Github workspace
+        workspace: ./extern\beatsaber-hook
+        # The library prefix to use. Should be the QPM ID.
+        libname: beatsaber-hook
    # - name: Upload a Build Artifact
    #   uses: actions/upload-artifact@v3.1.0
    #   with:
@@ -49,12 +60,5 @@ jobs:
    #     name: Build
    #     path: 
    #     # The desired behavior if no files are found using the provided path.
-    - name: Wait / Sleep
-      # You may pin to the exact commit or the version.
-      # uses: jakejarvis/wait-action@919fc193e07906705e5b7a50f90ea9e74d20b2b0
-      uses: jakejarvis/wait-action@v0.1.1
-      with:
-        # Follows the Linux sleep syntax for time units: a number followed by s for seconds, m for minutes, etc
-        time: 60s
  
         
