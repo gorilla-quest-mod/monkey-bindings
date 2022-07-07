@@ -50,7 +50,7 @@ jobs:
         # Cargo command to run (ex. `check` or `build`)
         command: build
         # Toolchain to use (without the `+` sign, ex. `nightly`)
-        toolchain: default
+        toolchain: stable
         # Arguments for the cargo command
         args: --release
     - run: "cd ../extern/beatsaber-hook; ../../QuestPacakgeManager-Rust/target/release/qpm-rust"
