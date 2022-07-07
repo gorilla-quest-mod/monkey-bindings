@@ -28,6 +28,5 @@ LOCAL_SRC_FILES += $(call rwildcard,./src,*.cpp)
 LOCAL_C_INCLUDES := ./include
 LOCAL_CFLAGS += -DMOD_ID='"codegen"' -DVERSION='"0.2.5"' -DNEED_UNSAFE_CSHARP -DNO_CODEGEN_USE
 LOCAL_CFLAGS += -Wall -Wextra -Werror -Wno-unused-function -isystem'C:\Users\Delano Leslie\gorilla-tag-data\' -isystem'extern'
-LOCAL_SHARED_LIBRARIES += beatsaber-hook
 LOCAL_LDLIBS := -llog
 include $(BUILD_SHARED_LIBRARY)
