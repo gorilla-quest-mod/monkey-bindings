@@ -41,17 +41,19 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@553df9b35280b89f01b0f3e4d93d9171095a55d4
       uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
-    - name: Build using QPM and NDK
+    - run: "git clone https://github.com/RedBrumbler/QuestPackageManager-Rust.git; cd QuestPackageManager-Rust;"
+    - name: rust-cargo
       # You may pin to the exact commit or the version.
-      # uses: sc2ad/QuestNDKBuildAction@b697f685e75bcf87f50ca95ea5f4baa7e99a9793
-      uses: sc2ad/QuestNDKBuildAction@v0.1.1
+      # uses: actions-rs/cargo@ae10961054e4aa8b4aa7dffede299aaf087aa33b
+      uses: actions-rs/cargo@v1.0.1
       with:
-        # Github token
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        # Github workspace
-        workspace: ./extern\beatsaber-hook
-        # The library prefix to use. Should be the QPM ID.
-        libname: beatsaber-hook
+        # Cargo command to run (ex. `check` or `build`)
+        command: build
+        # Toolchain to use (without the `+` sign, ex. `nightly`)
+        toolchain: default
+        # Arguments for the cargo command
+        args: --release
+    - run: "cd ../extern/beatsaber-hook; ../../QuestPacakgeManager-Rust/target/release/qpm-rust"
     - run: "ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
    # - name: Upload a Build Artifact
    #   uses: actions/upload-artifact@v3.1.0
