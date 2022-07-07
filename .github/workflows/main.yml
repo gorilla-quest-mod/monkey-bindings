@@ -53,8 +53,8 @@ jobs:
         toolchain: stable
         # Arguments for the cargo command
         args: --release
-    - run: "cd ../extern/beatsaber-hook; ../../QuestPacakgeManager-Rust/target/release/qpm-rust"
-    - run: "ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
+    - run: "cd ../extern/beatsaber-hook; ./target/release/qpm-rust restore"
+    - run: "cd ..; ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
    # - name: Upload a Build Artifact
    #   uses: actions/upload-artifact@v3.1.0
    #   with:
