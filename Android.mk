@@ -19,13 +19,7 @@ LOCAL_PATH := $(call my-dir)
 TARGET_ARCH_ABI := $(APP_ABI)
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-# Writing prebuilt shared library: beatsaber-hook
-include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook
-LOCAL_SRC_FILES := ./extern/libbeatsaber-hook_0_7_4.so
-LOCAL_CPP_FEATURES := exceptions
-LOCAL_EXPORT_C_INCLUDES := ./extern/beatsaber-hook/shared/
-include $(PREBUILT_SHARED_LIBRARY)
+# No Beat Saber hook here :)
 
 # Writing single library: codegen
 include $(CLEAR_VARS)
