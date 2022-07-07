@@ -26,41 +26,111 @@ jobs:
       name: Checkout
       with:
         submodules: true
-        lfs: true 
+        lfs: true
     - uses: seanmiddleditch/gha-setup-ninja@v3
-    - name: Setup Android NDK
-      # You may pin to the exact commit or the version.
-      # uses: nttld/setup-ndk@b2abc75192ee2a1ec118c8238fd86dec6d96dc43
-      uses: nttld/setup-ndk@v1.0.6
+#    - name: Install Powershell
+#      run: sudo apt-get install -y powershell
+#    - name: Cache Android NDK
+#      id: cache-ndk
+#      uses: actions/cache@v2
+#      env:
+#        cache-name: cache-ndk
+#      with:
+#        path: ndk
+#        key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+#        restore-keys: |
+#          ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+    
+#    - name: Install Android NDK
+#      if: steps.cache-ndk.outputs.cache-hit != 'true'
+#      run: |
+#        wget -q -O ndk.zip https://dl.google.com/android/repository/${ndkname}-linux-x86_64.zip
+#        unzip -q ndk.zip
+#        mv ${ndkname} ndk
+      
+#    - name: Create ndkpath.txt
+#      run: |
+#        cd ndk
+#        pwd > ${GITHUB_WORKSPACE}/ndkpath.txt
+    - name: Create ndkpath.txt
+      run: |
+        echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
+    - name: Get QPM
+      if: steps.cache-qpm.outputs.cache-hit != 'true'
+      uses: dawidd6/action-download-artifact@v2
       with:
-        # Exact version to use
-        ndk-version: r23c
-        # Add installation directory to path
-        add-to-path: true
-    - name: Print directory structure
-      # You may pin to the exact commit or the version.
-      # uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@553df9b35280b89f01b0f3e4d93d9171095a55d4
-      uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
-    - run: "git clone https://github.com/RedBrumbler/QuestPackageManager-Rust.git; cd QuestPackageManager-Rust;"
-    - name: rust-cargo
-      # You may pin to the exact commit or the version.
-      # uses: actions-rs/cargo@ae10961054e4aa8b4aa7dffede299aaf087aa33b
-      uses: actions-rs/cargo@v1.0.1
-      with:
-        # Cargo command to run (ex. `check` or `build`)
-        command: build
-        # Toolchain to use (without the `+` sign, ex. `nightly`)
-        toolchain: stable
-        # Arguments for the cargo command
-        args: --release
-    - run: "cd ../extern/beatsaber-hook; ./target/release/qpm-rust restore"
-    - run: "cd ..; ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
-   # - name: Upload a Build Artifact
-   #   uses: actions/upload-artifact@v3.1.0
-   #   with:
-   #     # Artifact name
-   #     name: Build
-   #     path: 
-   #     # The desired behavior if no files are found using the provided path.
- 
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: cargo-build.yml
+        name: linux-qpm-rust
+        path: QPM
+        repo: RedBrumbler/QuestPackageManager-Rust
         
+    - name: QPM Collapse
+      run: |
+        chmod +x ./QPM/qpm-rust
+        ./QPM/qpm-rust collapse
+        
+    - name: QPM Dependencies Cache
+      id: cache-qpm-deps
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-qpm-deps
+      with:
+        path: /home/runner/.local/share/QPM-Rust/cache
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.cache-name }}-
+          ${{ runner.os }}-${{ env.cache-name }}
+      
+    - name: QPM Restore
+      run: |
+        ./QPM/qpm-rust restore
+    - name: Check dependency Folders
+      run: |
+        echo "Checking extern includes"
+        ls -lh ${GITHUB_WORKSPACE}/extern/includes
+        echo ""
+        echo "Checking libs"
+        ls -lh ${GITHUB_WORKSPACE}/extern/libs
+        echo ""
+        echo "Checking QPM-Rust/cache Folder"
+        ls -lh $HOME/.local/share/QPM-Rust/cache
+        echo ""
+    - name: Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        ./QPM/qpm-rust package edit --version ${{ env.version }}
+        ./QPM/qpm-rust qmod build
+        pwsh -Command ./build.ps1 --actions
+    - name: Get Library Name
+      id: libname
+      run: |
+        cd ./build/
+        pattern="lib${module_id}*.so"
+        files=( $pattern )
+        echo ::set-output name=NAME::"${files[0]}"
+    - name: Package QMOD
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        pwsh -Command ./buildQMOD.ps1 -package
+    - name: Upload non-debug artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.libname.outputs.NAME }}
+        path: ./build/${{ steps.libname.outputs.NAME }}
+        if-no-files-found: error
+
+
+    - name: Upload debug artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: debug_${{ steps.libname.outputs.NAME }}
+        path: ./build/debug/${{ steps.libname.outputs.NAME }}
+        if-no-files-found: error
+
+    - name: Upload QMOD
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.module_id }}-(UNZIP-for-QMOD).qmod
+        path: ./${{ env.module_id }}_${{ env.version }}.qmod
+        if-no-files-found: warn
