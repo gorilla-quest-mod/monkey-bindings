@@ -37,4 +37,12 @@ jobs:
         ndk-version: r23c
         # Add installation directory to path
         add-to-path: true
-        run: "nkd-build"
+        run: "ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk"
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: Build
+        path: 
+        # The desired behavior if no files are found using the provided path.
+        
