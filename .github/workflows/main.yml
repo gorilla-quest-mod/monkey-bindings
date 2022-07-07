@@ -34,7 +34,7 @@ jobs:
       uses: nttld/setup-ndk@v1.0.6
       with:
         # Exact version to use
-        ndk-version: 23
+        ndk-version: r23c
         # Add installation directory to path
         add-to-path: true
         
