@@ -48,7 +48,7 @@ jobs:
       uses: sc2ad/QuestNDKBuildAction@v0.1.1
       with:
         # Github token
-        github_token: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         # Github workspace
         workspace: ./extern\beatsaber-hook
         # The library prefix to use. Should be the QPM ID.
